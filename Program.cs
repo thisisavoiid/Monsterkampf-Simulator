@@ -87,6 +87,10 @@ namespace Monsterkampf_Simulator
                     message: $"None of the two monsters won the fight. Please check for errors."
                 );
             }
+
+            // Keep-Alive
+            Console.ReadKey();
+
         }
 
         // Main method - entry point of the program
