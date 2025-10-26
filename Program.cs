@@ -111,9 +111,7 @@ namespace Monsterkampf_Simulator
         static void Main(string[] args)
         {
             // Runs the player onboarding setup to configure monsters
-
-
-             GameSetupFlow.PlayerOnboardingFlow();
+            GameSetupFlow.PlayerOnboardingFlow();
 
             /* Print debug info about monsters after creation
             DebugPrinter.Print(
