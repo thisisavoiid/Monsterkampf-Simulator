@@ -9,12 +9,18 @@ namespace Monsterkampf_Simulator
 {
     internal class GameSetupFlow
     {
+
+        static public int maxValue = 500;
+        static public int minValue = 10;
+
         // This method handles the onboarding flow for the player to configure their monsters
         public static void PlayerOnboardingFlow()
         {
             int scopeIndex = 1; // Tracks which step of the setup flow we're in
             int monsterIndex = 1; // Tracks whether we're setting up the first or second monster
             string input; // Variable to store user input from console
+
+            GUIHandler.PrintHeaderIcon();
 
             List<MonsterClass> availableMonsters = new List<MonsterClass>();
 
@@ -31,8 +37,7 @@ namespace Monsterkampf_Simulator
                 {
                     case 1:
                         {
-                            // Display the header/logo for the UI
-                            GUIHandler.PrintHeaderIcon();
+
                             Console.WriteLine("\nChoose your " + (monsterIndex == 1 ? "first" : "second") + " monster class:");
 
                             // List all available monsters with a number for selection
@@ -60,25 +65,28 @@ namespace Monsterkampf_Simulator
                                     {
                                         monster02.Class = availableMonsters[choice - 1];
                                     }
+                                    GUIHandler.ClearConsole(true);
                                     scopeIndex++; // Move to the next step
-                                    break;
+                                    
                                 }
                                 else
                                 {
                                     // Print error if number is out of range
                                     DebugPrinter.Print(
                                         level: DebugPrinter.DebugLevel.Error,
-                                        message: $"The entered value is outside of the given scope."
+                                        message: $"The entered value is outside of the given scope.",
+                                        deleteAfter: 1000
                                     );
-                                    break;
                                 }
+                                break;
                             }
                             else
                             {
                                 // Print error if input is not a number
                                 DebugPrinter.Print(
                                     level: DebugPrinter.DebugLevel.Error,
-                                    message: $"The entered value is not a number."
+                                    message: $"The entered value is not a number.",
+                                    deleteAfter: 1000
                                 );
                                 break;
                             }
@@ -92,26 +100,40 @@ namespace Monsterkampf_Simulator
 
                             if (LogicLib.IsNumeral(input))
                             {
-                                // Assign HP to the correct monster
-                                if (monsterIndex == 1)
+                                if (LogicLib.IsInRange(int.Parse(input), minValue, maxValue))
                                 {
-                                    monster01.HP = int.Parse(input);
+                                    // Assign HP to the correct monster
+                                    if (monsterIndex == 1)
+                                    {
+                                        monster01.HP = int.Parse(input);
+                                        monster01.maxHP = int.Parse(input);
+                                    }
+                                    else if (monsterIndex == 2)
+                                    {
+                                        monster02.HP = int.Parse(input);
+                                        monster02.maxHP = int.Parse(input);
+                                    }
+                                    GUIHandler.ClearConsole(true);
+                                    scopeIndex++; // Move to next step
                                 }
-                                else if (monsterIndex == 2)
+                                else
                                 {
-                                    monster02.HP = int.Parse(input);
+                                    DebugPrinter.Print(
+                                        level: DebugPrinter.DebugLevel.Error,
+                                        message: $"The entered value exceeds the allowed range {minValue}-{maxValue}.",
+                                        deleteAfter: 1000
+                                    );
                                 }
-                                scopeIndex++; // Move to next step
-                                break;
                             }
                             else
                             {
                                 DebugPrinter.Print(
                                     level: DebugPrinter.DebugLevel.Error,
-                                    message: $"The entered value is not a number."
+                                    message: $"The entered value is not a number.",
+                                    deleteAfter: 1000
                                 );
-                                break;
                             }
+                            break;
                         }
 
                     case 3:
@@ -122,25 +144,51 @@ namespace Monsterkampf_Simulator
 
                             if (LogicLib.IsNumeral(input))
                             {
-                                if (monsterIndex == 1)
+                                if (LogicLib.IsInRange(int.Parse(input), minValue, maxValue))
                                 {
-                                    monster01.AP = int.Parse(input);
+                                    if (monsterIndex == 1)
+                                    {
+                                        monster01.AP = int.Parse(input);
+                                        GUIHandler.ClearConsole(true);
+                                        scopeIndex++; // Move to next step
+                                    }
+                                    else if (monsterIndex == 2)
+                                    {
+                                        if (int.Parse(input) > monster01.DP)
+                                        {
+                                            monster02.AP = int.Parse(input);
+                                            GUIHandler.ClearConsole(true);
+                                            scopeIndex++; // Move to next step
+                                        }
+                                        else
+                                        {
+                                            DebugPrinter.Print(
+                                                level: DebugPrinter.DebugLevel.Error,
+                                                message: $"Attack must be higher than the opponent's DP ({monster01.DP})!",
+                                                deleteAfter: 1000
+                                            );
+                                        }
+                                    }
                                 }
-                                else if (monsterIndex == 2)
+                                else
                                 {
-                                    monster02.AP = int.Parse(input);
+                                    DebugPrinter.Print(
+                                        level: DebugPrinter.DebugLevel.Error,
+                                        message: $"The entered value exceeds the allowed range {minValue}-{maxValue}.",
+                                        deleteAfter: 1000
+                                    );
                                 }
-                                scopeIndex++; // Move to next step
-                                break;
                             }
                             else
                             {
                                 DebugPrinter.Print(
                                     level: DebugPrinter.DebugLevel.Error,
-                                    message: $"The entered value is not a number."
+                                    message: $"The entered value is not a number.",
+                                    deleteAfter: 1000
                                 );
-                                break;
+
                             }
+                            break;
                         }
 
                     case 4:
@@ -151,25 +199,51 @@ namespace Monsterkampf_Simulator
 
                             if (LogicLib.IsNumeral(input))
                             {
-                                if (monsterIndex == 1)
+                                if (LogicLib.IsInRange(int.Parse(input), minValue, maxValue))
                                 {
-                                    monster01.DP = int.Parse(input);
+                                    if (monsterIndex == 1)
+                                    {
+                                        monster01.DP = int.Parse(input);
+                                        GUIHandler.ClearConsole(true);
+                                        scopeIndex++; // Move to next step
+                                    }
+                                    else if (monsterIndex == 2)
+                                    {
+                                        if (int.Parse(input) < monster01.AP)
+                                        {
+                                            monster02.DP = int.Parse(input);
+                                            GUIHandler.ClearConsole(true);
+                                            scopeIndex++; // Move to next step
+                                        }
+                                        else
+                                        {
+                                            DebugPrinter.Print(
+                                                level: DebugPrinter.DebugLevel.Error,
+                                                message: $"Defense must be lower than the opponent's AP ({monster01.AP})!",
+                                                deleteAfter: 1000
+                                            );
+                                        }
+                                    }
+
                                 }
-                                else if (monsterIndex == 2)
+                                else
                                 {
-                                    monster02.DP = int.Parse(input);
+                                    DebugPrinter.Print(
+                                        level: DebugPrinter.DebugLevel.Error,
+                                        message: $"The entered value exceeds the allowed range {minValue}-{maxValue}.",
+                                        deleteAfter: 1000
+                                    );
                                 }
-                                scopeIndex++; // Move to next step
-                                break;
                             }
                             else
                             {
                                 DebugPrinter.Print(
                                     level: DebugPrinter.DebugLevel.Error,
-                                    message: $"The entered value is not a number."
+                                    message: $"The entered value is not a number.",
+                                    deleteAfter: 1000
                                 );
-                                break;
                             }
+                            break;
                         }
 
                     case 5:
@@ -180,37 +254,49 @@ namespace Monsterkampf_Simulator
 
                             if (LogicLib.IsNumeral(input))
                             {
-                                if (monsterIndex == 1)
+                                if (LogicLib.IsInRange(int.Parse(input), minValue, maxValue))
                                 {
-                                    monster01.S = int.Parse(input);
-                                }
-                                else if (monsterIndex == 2)
-                                {
-                                    monster02.S = int.Parse(input);
-                                }
+                                    if (monsterIndex == 1)
+                                    {
+                                        monster01.S = int.Parse(input);
+                                    }
+                                    else if (monsterIndex == 2)
+                                    {
+                                        monster02.S = int.Parse(input);
+                                    }
+                                    // If second monster is fully set, end the onboarding flow
+                                    if (monsterIndex == 2 && scopeIndex == 5)
+                                    {
+                                        GUIHandler.ClearConsole(true);
+                                        return; // Exit the method
+                                    }
 
-                                // If second monster is fully set, end the onboarding flow
-                                if (monsterIndex == 2 && scopeIndex == 5)
-                                {
-                                    Console.Clear();
-                                    GUIHandler.PrintHeaderIcon();
-                                    return; // Exit the method
+                                    // Switch to the second monster setup
+                                    monsterIndex = 2;
+                                    scopeIndex = 1;
+                                    GUIHandler.ClearConsole(true);
                                 }
-
-                                // Switch to the second monster setup
-                                monsterIndex = 2;
-                                scopeIndex = 1;
-                                Console.Clear();
-                                break;
+                                else
+                                {
+                                    DebugPrinter.Print(
+                                        level: DebugPrinter.DebugLevel.Error,
+                                        message: $"The entered value exceeds the allowed range {minValue}-{maxValue}.",
+                                        deleteAfter: 1000
+                                    );
+                                }
                             }
                             else
                             {
                                 DebugPrinter.Print(
                                     level: DebugPrinter.DebugLevel.Error,
-                                    message: $"The entered value is not a number."
+                                    message: $"The entered value is not a number.",
+                                    deleteAfter: 1000
                                 );
-                                break;
                             }
+
+
+                            break;
+
                         }
                 }
             }

@@ -25,5 +25,10 @@ namespace Monsterkampf_Simulator
                 return false;
             }
         }
+
+        public static bool IsInRange(int value, int min, int max)
+        {
+            return min <= value && value <= max;
+        }
     }
 }

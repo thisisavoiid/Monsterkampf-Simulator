@@ -14,6 +14,7 @@ namespace Monsterkampf_Simulator
         public float AP; // Attack power (damage)
         public float HP; // Health points
         public float S;  // Speed (used as attack cooldown in milliseconds)
+        public float maxHP; 
 
         // Monster class/type (e.g., Ork, Troll)
         internal Program.MonsterClass Class;
@@ -25,6 +26,7 @@ namespace Monsterkampf_Simulator
             AP = 0;
             HP = 0;
             S = 0;
+            maxHP = 0;
             Class = Program.MonsterClass.Ork; // Default monster type
         }
 
@@ -36,6 +38,7 @@ namespace Monsterkampf_Simulator
             HP = hp;
             S = s;
             Class = monster_type;
+            maxHP = hp;
         }
 
         // Prints info about the newly created monster (called optionally)
@@ -54,7 +57,7 @@ namespace Monsterkampf_Simulator
             Thread.Sleep((int)Math.Round(S));
 
             // Calculate damage dealt to target
-            float damage = (AP - DP);
+            float damage = (AP - target.DP);
 
             // Ensure damage is not negative to avoid breaking the game
             if (damage <= 0)
@@ -69,7 +72,7 @@ namespace Monsterkampf_Simulator
             // Reduce target's HP by the calculated damage
             target.HP -= damage;
 
-            // Log target's updated HP
+            /* Log target's updated HP
             DebugPrinter.Print(
                 level: DebugPrinter.DebugLevel.Info,
                 message: $"(Round: {Program.currentRound}) {target.Class} Monster HP has been refreshed: {target.HP}"
@@ -80,6 +83,7 @@ namespace Monsterkampf_Simulator
                 level: DebugPrinter.DebugLevel.Info,
                 message: $"Waiting for {this.Class} to be able to attack again: {this.S}ms Cooldown initialized."
             );
+            */
         }
     }
 }

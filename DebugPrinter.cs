@@ -34,12 +34,18 @@ namespace Monsterkampf_Simulator
         };
 
         // Manages the console output
-        public static void Print(string message, DebugLevel level)
+        public static void Print(string message, DebugLevel level, int deleteAfter=0)
         {
             Console.ForegroundColor = DebugFormat[level].fgColor;
             Console.BackgroundColor = DebugFormat[level].bgColor;
             Console.WriteLine($"[{DebugFormat[level].prefix}] {message}");
             Console.ResetColor();
+
+            if (deleteAfter > 0)
+            {
+                Thread.Sleep(deleteAfter);
+                GUIHandler.ClearConsole(true);
+            }
         }
 
     }

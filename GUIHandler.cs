@@ -46,5 +46,76 @@ namespace Monsterkampf_Simulator
             Console.ResetColor(); // Reset the console color back to default after printing
         }
 
+
+        static public string BuildSingleBar(float curr_value, float max_value, int len, bool isInverted)
+        {
+            char filledChunkChar = '█';
+            char emptyChunkChar = '░';
+            int stringLen = Math.Max(0, (int)Math.Round(len * (curr_value / max_value)));
+
+            if (isInverted)
+            {
+                return new string(filledChunkChar, len - stringLen) + new string(emptyChunkChar, stringLen);
+            }
+            else
+            {
+                return new string(filledChunkChar, stringLen) + new string(emptyChunkChar, len - stringLen);
+            }
+        }
+
+        static public void ClearConsole(bool keepHeader = true)
+        {
+            Console.CursorVisible = false;
+            if (keepHeader)
+            {
+                for (int i = 7; i < Console.WindowHeight; i++)
+                {
+                    Console.SetCursorPosition(0, i);
+                    Console.Write(new string(' ', Console.WindowWidth));
+                }
+                Console.SetCursorPosition(0, 7);
+            }
+            else
+            {
+                Console.Clear();
+            }
+            Console.CursorVisible= true;
+        }
+        static public void PrintAllMonsterStats(Monster monster01, Monster monster02)
+        {
+            ClearConsole(true);
+            Console.Write("\n");
+            PrintSingleMonsterStatBars(monster01);
+            Console.WriteLine("\n");
+            PrintSingleMonsterStatBars(monster02);
+        }
+
+        static public void PrintSingleMonsterStatBars(Monster monster)
+        {
+
+            string hpBar = BuildSingleBar(monster.HP, monster.maxHP, 20, false) + $" {Math.Max(0,monster.HP)} HP";
+            string apBar = BuildSingleBar(monster.AP, GameSetupFlow.maxValue, 20, false) + $" {monster.AP} AP";
+            string dpBar = BuildSingleBar(monster.DP, GameSetupFlow.maxValue, 20, false) + $" {monster.DP} DP";
+            string speedBar = BuildSingleBar(monster.S, GameSetupFlow.maxValue, 20, true) + $" {monster.S} S";
+
+            Console.ResetColor();
+
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.WriteLine((monster.Class.ToString().ToUpper()));
+
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(hpBar);
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine(apBar);
+
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine(dpBar);
+
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine(speedBar);
+
+            Console.ResetColor();
+        }
     }
 }
