@@ -43,6 +43,8 @@ namespace Monsterkampf_Simulator
 
             while (true)
             {
+
+                Console.CursorVisible = true;
                 Console.ForegroundColor = ConsoleColor.Yellow;
 
                 switch (scopeIndex)

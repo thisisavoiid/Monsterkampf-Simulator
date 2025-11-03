@@ -53,6 +53,8 @@ namespace Monsterkampf_Simulator
 
             monster01FightThread.Join();
             monster02FightThread.Join();
+
+
         }
 
         static void EndGameFlow()
@@ -61,7 +63,7 @@ namespace Monsterkampf_Simulator
 
             GUIHandler.ClearInfoBoard();
             GUIHandler.ClearConsole(true);
-            
+
 
             if (monster01.IsAlive())
             {
@@ -87,10 +89,8 @@ namespace Monsterkampf_Simulator
 
         static void Main(string[] args)
         {
-            Console.CursorVisible = false;
-
             GameSetupFlow.PlayerOnboardingFlow();
-            GUIHandler.PrintAllMonsterStats(monster01, monster02);
+            Console.CursorVisible = false;
 
             fightThreadHandler.Start();
             fightThreadHandler.Join();

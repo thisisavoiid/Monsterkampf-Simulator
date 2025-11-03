@@ -19,6 +19,7 @@
 
             float hpRatio = this._maxHp / this._hp;
             attacker.TakeDamage((float)Math.Round(hpRatio * 10), this);
+            GUIHandler.AddInfoBoardEntry($"{this.GetType().Name} inflicted {(float)Math.Round(hpRatio * 10)} damage by thorns!");
             GUIHandler.AddInfoBoardEntry($"{this.GetType().Name} took {damage} damage!");
         }
 
@@ -111,7 +112,6 @@
 
     public abstract class Monster
     {
-        // Monster attributes
         public float _dp { get; set; }
         public float _ap { get; set; }
         public float _hp { get; set; }
@@ -119,7 +119,7 @@
         public float _maxHp { get; set; }
         public string _description { get; set; }
 
-        internal Monster()
+        public Monster()
         {
             _dp = 0;
             _ap = 0;
@@ -129,13 +129,14 @@
             _description = string.Empty;
         }
 
-        internal Monster(float hp, float ap, float dp, float s)
+        public Monster(float hp, float ap, float dp, float s)
         {
             _dp = dp;
             _ap = ap;
             _hp = hp;
             _s = s;
             _maxHp = hp;
+            _description = string.Empty;
         }
 
         public abstract void TakeDamage(float damage, Monster attacker);

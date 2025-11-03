@@ -56,8 +56,6 @@
 
         public static void ClearConsole(bool keepHeader = true)
         {
-            Console.CursorVisible = false;
-
             if (keepHeader)
             {
                 for (int i = 7; i < Console.WindowHeight; i++)
@@ -71,14 +69,12 @@
             {
                 Console.Clear();
             }
-
-            Console.CursorVisible = true;
         }
 
         public static void PrintInfoBoard() {
             Console.ResetColor();
             Console.ForegroundColor = ConsoleColor.Magenta;
-            Console.WriteLine(new string('=', 10) + " ACTION BOARD " + new string('=', 10));
+            Console.WriteLine(new string('=', 15) + " ACTION BOARD " + new string('=', 15));
             Console.ForegroundColor = ConsoleColor.DarkMagenta;
             Console.WriteLine(string.Join("\n", infoBoardContent));
             Console.ResetColor();
@@ -91,9 +87,13 @@
 
         public static void AddInfoBoardEntry(string entry)
         {
-            if (infoBoardContent.Count>5)
+            if (infoBoardContent.Count>3)
             {
-                infoBoardContent.Remove(infoBoardContent[0]);
+                while (infoBoardContent.Count > 3)
+                {
+                    infoBoardContent.Remove(infoBoardContent[0]);
+                }
+                    
             }
             infoBoardContent.Add("- " + entry);
         }
