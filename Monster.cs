@@ -1,89 +1,152 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Threading;
-
-namespace Monsterkampf_Simulator
+﻿namespace Monsterkampf_Simulator
 {
-    public class Monster
+    public class Ork : Monster
     {
-        // Monster attributes
-        public float DP; // Defense points (damage reduction)
-        public float AP; // Attack power (damage)
-        public float HP; // Health points
-        public float S;  // Speed (used as attack cooldown in milliseconds)
-        public float maxHP; 
 
-        // Monster class/type (e.g., Ork, Troll)
-        internal Program.MonsterClass Class;
-
-        // Default constructor, creates a monster with default values
-        internal Monster()
+        public Ork()
         {
-            DP = 0;
-            AP = 0;
-            HP = 0;
-            S = 0;
-            maxHP = 0;
-            Class = Program.MonsterClass.Ork; // Default monster type
+            _description = "The mischievious Ork has the ability to inflict a thorn effect on its opponent, dealing back a certain damage!";
         }
 
-        // Overloaded constructor, creates a monster with custom values
-        internal Monster(float hp, float ap, float dp, float s, Program.MonsterClass monster_type)
+        public override void TakeDamage(float damage, Monster attacker)
         {
-            DP = dp;
-            AP = ap;
-            HP = hp;
-            S = s;
-            Class = monster_type;
-            maxHP = hp;
+            this._hp -= damage;
+
+            if (this._hp < 0)
+            {
+                this._hp = 0;
+            }
+
+            float hpRatio = this._maxHp / this._hp;
+            attacker.TakeDamage((float)Math.Round(hpRatio * 10), this);
+            GUIHandler.AddInfoBoardEntry($"{this.GetType().Name} took {damage} damage!");
         }
 
-        // Prints info about the newly created monster (called optionally)
-        public void NewMonsterCreatedFeedback()
+        public override void Attack(Monster target)
         {
-            DebugPrinter.Print(
-                level: DebugPrinter.DebugLevel.Info,
-                message: $"Monster of Type {Class} created successfully. Values have been set to: AP: {AP} DP: {DP} HP: {HP} S: {S}"
-            );
-        }
+            base.Attack(target);
 
-        // Method to attack another monster
-        public void Attack(Monster target)
-        {
-            // Wait for a duration based on attack speed before attacking again
-            Thread.Sleep((int)Math.Round(S));
+            Thread.Sleep((int)Math.Round(_s));
 
-            // Calculate damage dealt to target
-            float damage = (AP - target.DP);
+            float damage = (_ap - target._dp);
 
-            // Ensure damage is not negative to avoid breaking the game
             if (damage <= 0)
             {
-                DebugPrinter.Print(
-                    level: DebugPrinter.DebugLevel.Warning,
-                    message: $"With the current configuration of {Class}, the attack damage is {damage} which could break the game. Damage has been defaulted to 0."
-                );
                 damage = 0;
             }
 
-            // Reduce target's HP by the calculated damage
-            target.HP -= damage;
+            target.TakeDamage(damage, this);
+        }
+    }
 
-            /* Log target's updated HP
-            DebugPrinter.Print(
-                level: DebugPrinter.DebugLevel.Info,
-                message: $"(Round: {Program.currentRound}) {target.Class} Monster HP has been refreshed: {target.HP}"
-            );
 
-            // Log attack cooldown info
-            DebugPrinter.Print(
-                level: DebugPrinter.DebugLevel.Info,
-                message: $"Waiting for {this.Class} to be able to attack again: {this.S}ms Cooldown initialized."
-            );
-            */
+    public class Troll : Monster
+    {
+        public Troll()
+        {
+            _description = "Hier muss eine Beschreibung hin, die die Fähigkeit des Monsters erklärt!";
+        }
+
+        public override void TakeDamage(float damage, Monster attacker)
+        {
+            this._hp -= damage;
+            if (this._hp < 0)
+            {
+                this._hp = 0;
+            }
+            GUIHandler.AddInfoBoardEntry($"{this.GetType().Name} took {damage} damage!");
+        }
+
+        public override void Attack(Monster target)
+        {
+            base.Attack(target);
+
+            Thread.Sleep((int)Math.Round(_s));
+
+            float damage = (_ap - target._dp);
+
+            if (damage <= 0)
+            {
+                damage = 0;
+            }
+
+            target.TakeDamage(damage, this);
+        }
+    }
+
+    public class Goblin : Monster
+    {
+
+        public Goblin()
+        {
+            _description = "Hier muss eine Beschreibung hin, die die Fähigkeit des Monsters erklärt!";
+
+        }
+        public override void TakeDamage(float damage, Monster attacker)
+        {
+            this._hp -= damage;
+            if (this._hp < 0)
+            {
+                this._hp = 0;
+            }
+            GUIHandler.AddInfoBoardEntry($"{this.GetType().Name} took {damage} damage!");
+        }
+
+        public override void Attack(Monster target)
+        {
+            base.Attack(target);
+
+            Thread.Sleep((int)Math.Round(_s));
+
+            float damage = (_ap - target._dp);
+
+            if (damage <= 0)
+            {
+                damage = 0;
+            }
+
+            target.TakeDamage(damage, this);
+        }
+    }
+
+    public abstract class Monster
+    {
+        // Monster attributes
+        public float _dp { get; set; }
+        public float _ap { get; set; }
+        public float _hp { get; set; }
+        public float _s { get; set; }
+        public float _maxHp { get; set; }
+        public string _description { get; set; }
+
+        internal Monster()
+        {
+            _dp = 0;
+            _ap = 0;
+            _hp = 0;
+            _s = 0;
+            _maxHp = 0;
+            _description = string.Empty;
+        }
+
+        internal Monster(float hp, float ap, float dp, float s)
+        {
+            _dp = dp;
+            _ap = ap;
+            _hp = hp;
+            _s = s;
+            _maxHp = hp;
+        }
+
+        public abstract void TakeDamage(float damage, Monster attacker);
+        public virtual void Attack(Monster target)
+        {
+            GUIHandler.AddInfoBoardEntry($"{this.GetType().Name} attacked {target.GetType().Name}!");
+        }
+
+        public bool IsAlive()
+        {
+            return (_hp > 0);
         }
     }
 }

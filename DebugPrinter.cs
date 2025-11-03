@@ -1,15 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Security;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Monsterkampf_Simulator
+﻿namespace Monsterkampf_Simulator
 {
     internal class DebugPrinter
     {
-        // List of available debug levels
         internal enum DebugLevel
         {
             Info,
@@ -17,7 +9,6 @@ namespace Monsterkampf_Simulator
             Error
         }
 
-        // Struct that contains color and prefix
         struct ConsoleFormat
         {
             public ConsoleColor fgColor;
@@ -25,7 +16,6 @@ namespace Monsterkampf_Simulator
             public string prefix;
         }
 
-        // Contains all the ConsoleFormat structs in order to format the console output properly
         static readonly Dictionary<DebugLevel, ConsoleFormat> DebugFormat = new Dictionary<DebugLevel, ConsoleFormat>()
         {
             {DebugLevel.Info, new ConsoleFormat{fgColor=ConsoleColor.White, bgColor=ConsoleColor.Black, prefix="INFO" }},
@@ -33,7 +23,6 @@ namespace Monsterkampf_Simulator
             {DebugLevel.Error, new ConsoleFormat{fgColor=ConsoleColor.Red, bgColor=ConsoleColor.Black, prefix="ERROR" }}
         };
 
-        // Manages the console output
         public static void Print(string message, DebugLevel level, int deleteAfter=0)
         {
             Console.ForegroundColor = DebugFormat[level].fgColor;

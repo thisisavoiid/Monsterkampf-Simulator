@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Reflection;
 using static Monsterkampf_Simulator.Program;
 
 namespace Monsterkampf_Simulator
@@ -13,65 +9,83 @@ namespace Monsterkampf_Simulator
         static public int maxValue = 500;
         static public int minValue = 10;
 
-        // This method handles the onboarding flow for the player to configure their monsters
+        private static Type[] GetAllMonsters()
+        {
+            Assembly executingAssembly = Assembly.GetExecutingAssembly();
+            List<Type> classList = new List<Type>();
+
+            foreach (Type classItem in executingAssembly.GetTypes().Where(type => type.IsClass).ToList())
+            {
+                if (classItem.IsSubclassOf(typeof(Monster)))
+                {
+                    classList.Add(classItem);
+                }
+            }
+            return classList.ToArray();
+        }
+
         public static void PlayerOnboardingFlow()
         {
-            int scopeIndex = 1; // Tracks which step of the setup flow we're in
-            int monsterIndex = 1; // Tracks whether we're setting up the first or second monster
-            string input; // Variable to store user input from console
+            int scopeIndex = 1;
+            int monsterIndex = 1;
+            string input;
 
             GUIHandler.PrintHeaderIcon();
 
-            List<MonsterClass> availableMonsters = new List<MonsterClass>();
+            List<Monster> availableMonsters = new List<Monster>();
 
-            // Populate the availableMonsters list with all possible MonsterClass enum values
-            foreach (int monsterClassIndex in Enum.GetValues(typeof(MonsterClass)))
+            foreach (Type monsterClass in GetAllMonsters())
             {
-                availableMonsters.Add((MonsterClass)monsterClassIndex);
+                Monster monsterInstance = (Monster)Activator.CreateInstance(monsterClass);
+                availableMonsters.Add(monsterInstance);
             }
 
-            // Main loop that runs the onboarding process
+
             while (true)
             {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+
                 switch (scopeIndex)
                 {
+
                     case 1:
                         {
 
-                            Console.WriteLine("\nChoose your " + (monsterIndex == 1 ? "first" : "second") + " monster class:");
+                            Console.ForegroundColor = ConsoleColor.Yellow;
+                            Console.WriteLine("\n=> Choose your " + (monsterIndex == 1 ? "first" : "second") + " monster class:\n");
 
-                            // List all available monsters with a number for selection
                             for (int i = 0; i < availableMonsters.Count; i++)
                             {
-                                Console.WriteLine($"[{i + 1}] {availableMonsters[i]}");
+                                Console.ForegroundColor = ConsoleColor.Cyan;
+                                Console.WriteLine($"[{i + 1}] {availableMonsters[i].GetType().Name}");
+                                Console.ForegroundColor = ConsoleColor.DarkCyan;
+                                Console.WriteLine($"- {availableMonsters[i]._description}\n");
                             }
+
+                            Console.ResetColor();
 
                             input = Console.ReadLine();
 
-                            // Check if input is a number
                             if (LogicLib.IsNumeral(input))
                             {
                                 int choice = int.Parse(input);
-                                // Validate that the number is within the valid range
                                 if (choice > 0 && choice <= availableMonsters.Count)
                                 {
-                                    // Assign chosen monster class to the first or second monster
                                     if (monsterIndex == 1)
                                     {
-                                        monster01.Class = availableMonsters[choice - 1];
-                                        availableMonsters.Remove(availableMonsters[choice - 1]); // Remove selected monster so it can't be picked again
+                                        monster01 = availableMonsters[choice - 1];
                                     }
                                     else if (monsterIndex == 2)
                                     {
-                                        monster02.Class = availableMonsters[choice - 1];
+                                        monster02 = availableMonsters[choice - 1];
                                     }
                                     GUIHandler.ClearConsole(true);
-                                    scopeIndex++; // Move to the next step
-                                    
+                                    availableMonsters.Remove(availableMonsters[choice - 1]);
+                                    scopeIndex++;
+
                                 }
                                 else
                                 {
-                                    // Print error if number is out of range
                                     DebugPrinter.Print(
                                         level: DebugPrinter.DebugLevel.Error,
                                         message: $"The entered value is outside of the given scope.",
@@ -82,7 +96,6 @@ namespace Monsterkampf_Simulator
                             }
                             else
                             {
-                                // Print error if input is not a number
                                 DebugPrinter.Print(
                                     level: DebugPrinter.DebugLevel.Error,
                                     message: $"The entered value is not a number.",
@@ -94,27 +107,25 @@ namespace Monsterkampf_Simulator
 
                     case 2:
                         {
-                            // Ask user to set the total HP (health points) for the monster
-                            Console.Write($"\nSet the total HP (health points) of your {(monsterIndex == 1 ? monster01.Class : monster02.Class)}: ");
+                            Console.Write($"\nSet the total HP (health points) of your {(monsterIndex == 1 ? monster01.GetType().Name : monster02.GetType().Name)}: ");
                             input = Console.ReadLine();
 
                             if (LogicLib.IsNumeral(input))
                             {
                                 if (LogicLib.IsInRange(int.Parse(input), minValue, maxValue))
                                 {
-                                    // Assign HP to the correct monster
                                     if (monsterIndex == 1)
                                     {
-                                        monster01.HP = int.Parse(input);
-                                        monster01.maxHP = int.Parse(input);
+                                        monster01._hp = int.Parse(input);
+                                        monster01._maxHp = int.Parse(input);
                                     }
                                     else if (monsterIndex == 2)
                                     {
-                                        monster02.HP = int.Parse(input);
-                                        monster02.maxHP = int.Parse(input);
+                                        monster02._hp = int.Parse(input);
+                                        monster02._maxHp = int.Parse(input);
                                     }
                                     GUIHandler.ClearConsole(true);
-                                    scopeIndex++; // Move to next step
+                                    scopeIndex++;
                                 }
                                 else
                                 {
@@ -138,8 +149,7 @@ namespace Monsterkampf_Simulator
 
                     case 3:
                         {
-                            // Ask user to set the attack power of the monster
-                            Console.Write($"\nSet the attack power (damage) of your {(monsterIndex == 1 ? monster01.Class : monster02.Class)}: ");
+                            Console.Write($"\nSet the attack power (damage) of your {(monsterIndex == 1 ? monster01.GetType().Name : monster02.GetType().Name)}: ");
                             input = Console.ReadLine();
 
                             if (LogicLib.IsNumeral(input))
@@ -148,23 +158,23 @@ namespace Monsterkampf_Simulator
                                 {
                                     if (monsterIndex == 1)
                                     {
-                                        monster01.AP = int.Parse(input);
+                                        monster01._ap = int.Parse(input);
                                         GUIHandler.ClearConsole(true);
-                                        scopeIndex++; // Move to next step
+                                        scopeIndex++;
                                     }
                                     else if (monsterIndex == 2)
                                     {
-                                        if (int.Parse(input) > monster01.DP)
+                                        if (int.Parse(input) > monster01._dp)
                                         {
-                                            monster02.AP = int.Parse(input);
+                                            monster02._ap = int.Parse(input);
                                             GUIHandler.ClearConsole(true);
-                                            scopeIndex++; // Move to next step
+                                            scopeIndex++;
                                         }
                                         else
                                         {
                                             DebugPrinter.Print(
                                                 level: DebugPrinter.DebugLevel.Error,
-                                                message: $"Attack must be higher than the opponent's DP ({monster01.DP})!",
+                                                message: $"Attack must be higher than the opponent's DP ({monster01._dp})!",
                                                 deleteAfter: 1000
                                             );
                                         }
@@ -193,8 +203,7 @@ namespace Monsterkampf_Simulator
 
                     case 4:
                         {
-                            // Ask user to set the defense points (damage reduction) of the monster
-                            Console.Write($"\nSet the defense points (damage reduction) of your {(monsterIndex == 1 ? monster01.Class : monster02.Class)}: ");
+                            Console.Write($"\nSet the defense points (damage reduction) of your {(monsterIndex == 1 ? monster01.GetType().Name : monster02.GetType().Name)}: ");
                             input = Console.ReadLine();
 
                             if (LogicLib.IsNumeral(input))
@@ -203,23 +212,23 @@ namespace Monsterkampf_Simulator
                                 {
                                     if (monsterIndex == 1)
                                     {
-                                        monster01.DP = int.Parse(input);
+                                        monster01._dp = int.Parse(input);
                                         GUIHandler.ClearConsole(true);
-                                        scopeIndex++; // Move to next step
+                                        scopeIndex++;
                                     }
                                     else if (monsterIndex == 2)
                                     {
-                                        if (int.Parse(input) < monster01.AP)
+                                        if (int.Parse(input) < monster01._ap)
                                         {
-                                            monster02.DP = int.Parse(input);
+                                            monster02._dp = int.Parse(input);
                                             GUIHandler.ClearConsole(true);
-                                            scopeIndex++; // Move to next step
+                                            scopeIndex++;
                                         }
                                         else
                                         {
                                             DebugPrinter.Print(
                                                 level: DebugPrinter.DebugLevel.Error,
-                                                message: $"Defense must be lower than the opponent's AP ({monster01.AP})!",
+                                                message: $"Defense must be lower than the opponent's AP ({monster01._ap})!",
                                                 deleteAfter: 1000
                                             );
                                         }
@@ -248,8 +257,7 @@ namespace Monsterkampf_Simulator
 
                     case 5:
                         {
-                            // Ask user to set the attack speed of the monster
-                            Console.Write($"\nSet the attack speed of your {(monsterIndex == 1 ? monster01.Class : monster02.Class)}: ");
+                            Console.Write($"\nSet the attack speed of your {(monsterIndex == 1 ? monster01.GetType().Name : monster02.GetType().Name)}: ");
                             input = Console.ReadLine();
 
                             if (LogicLib.IsNumeral(input))
@@ -258,20 +266,18 @@ namespace Monsterkampf_Simulator
                                 {
                                     if (monsterIndex == 1)
                                     {
-                                        monster01.S = int.Parse(input);
+                                        monster01._s = int.Parse(input);
                                     }
                                     else if (monsterIndex == 2)
                                     {
-                                        monster02.S = int.Parse(input);
+                                        monster02._s = int.Parse(input);
                                     }
-                                    // If second monster is fully set, end the onboarding flow
                                     if (monsterIndex == 2 && scopeIndex == 5)
                                     {
                                         GUIHandler.ClearConsole(true);
-                                        return; // Exit the method
+                                        return;
                                     }
 
-                                    // Switch to the second monster setup
                                     monsterIndex = 2;
                                     scopeIndex = 1;
                                     GUIHandler.ClearConsole(true);

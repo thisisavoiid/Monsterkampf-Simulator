@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Monsterkampf_Simulator
+﻿namespace Monsterkampf_Simulator
 {
     public class GUIHandler
     {
-        // This method prints the game header with a rainbow color effect
-        static public void PrintHeaderIcon()
+        private static List<string> infoBoardContent = new List<string>();
+        public static void PrintHeaderIcon()
         {
-            // The ASCII art for the header including the "Made by" line
+
             string headerIcon = "______  ___                   _____                 ______________        ______ _____             \r\n" +
                                 "___   |/  /_____________________  /_____________    ___  ____/__(_)______ ___  /___  /_____________\r\n" +
                                 "__  /|_/ /_  __ \\_  __ \\_  ___/  __/  _ \\_  ___/    __  /_   __  /__  __ `/_  __ \\  __/  _ \\_  ___/\r\n" +
@@ -20,12 +14,10 @@ namespace Monsterkampf_Simulator
                                 "                                                                  /____/                           \r\n" +
                                 "(Made by Jonathan Huber)\n";
 
-            int i = 1; // Counter to cycle through colors for the rainbow effect
+            int i = 1;
 
-            // Loop through each character of the header string
             foreach (char c in headerIcon)
             {
-                // Change console color based on the current counter value to create rainbow effect
                 switch (i)
                 {
                     case 1: Console.ForegroundColor = ConsoleColor.Red; break;
@@ -37,87 +29,100 @@ namespace Monsterkampf_Simulator
                     default: Console.ForegroundColor = ConsoleColor.White; break;
                 }
 
-                Console.Write(c); // Print the current character in the chosen color
+                Console.Write(c);
 
-                // Increment color counter, reset to 1 after 6 to loop the rainbow
                 if (i < 6) i++; else i = 1;
             }
 
-            Console.ResetColor(); // Reset the console color back to default after printing
+            Console.ResetColor();
         }
 
-        // Builds a single horizontal progress bar for stats like HP, AP, DP, Speed
-        static public string BuildSingleBar(float curr_value, float max_value, int len, bool isInverted)
+        public static string BuildSingleBar(float curr_value, float max_value, int len, bool isInverted)
         {
-            char filledChunkChar = '█'; // Character representing filled portion
-            char emptyChunkChar = '░';  // Character representing empty portion
+            char filledChunkChar = '█';
+            char emptyChunkChar = '░';
 
-            // Calculate the number of characters to fill proportionally
-            // Clamp at 0 to prevent negative values
             int stringLen = Math.Max(0, (int)Math.Round(len * (curr_value / max_value)));
 
             if (isInverted)
             {
-                // For inverted bars (higher value = more empty space)
                 return new string(filledChunkChar, len - stringLen) + new string(emptyChunkChar, stringLen);
             }
             else
             {
-                // Normal bars (higher value = more filled space)
                 return new string(filledChunkChar, stringLen) + new string(emptyChunkChar, len - stringLen);
             }
         }
 
-        // Clears the console while optionally keeping the header at the top
-        static public void ClearConsole(bool keepHeader = true)
+        public static void ClearConsole(bool keepHeader = true)
         {
-            Console.CursorVisible = false; // Hide the cursor during clearing
+            Console.CursorVisible = false;
 
             if (keepHeader)
             {
-                // Clear only the lines below the header
                 for (int i = 7; i < Console.WindowHeight; i++)
                 {
-                    Console.SetCursorPosition(0, i);              // Move cursor to the start of the line
-                    Console.Write(new string(' ', Console.WindowWidth)); // Fill line with spaces
+                    Console.SetCursorPosition(0, i);
+                    Console.Write(new string(' ', Console.WindowWidth));
                 }
-                Console.SetCursorPosition(0, 7); // Reset cursor position below header
+                Console.SetCursorPosition(0, 7);
             }
             else
             {
-                Console.Clear(); // Completely clear the console
+                Console.Clear();
             }
 
-            Console.CursorVisible = true; // Make cursor visible again
+            Console.CursorVisible = true;
         }
 
-        // Prints the stat bars for both monsters
-        static public void PrintAllMonsterStats(Monster monster01, Monster monster02)
-        {
-            ClearConsole(true); // Clear console but keep header
-            Console.Write("\n"); // Add a blank line for spacing
-
-            PrintSingleMonsterStatBars(monster01); // Print first monster stats
-            Console.WriteLine("\n");                 // Spacing between monsters
-            PrintSingleMonsterStatBars(monster02); // Print second monster stats
+        public static void PrintInfoBoard() {
+            Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.Magenta;
+            Console.WriteLine(new string('=', 10) + " ACTION BOARD " + new string('=', 10));
+            Console.ForegroundColor = ConsoleColor.DarkMagenta;
+            Console.WriteLine(string.Join("\n", infoBoardContent));
+            Console.ResetColor();
         }
 
-        // Prints the stat bars for a single monster
-        static public void PrintSingleMonsterStatBars(Monster monster)
+        public static void ClearInfoBoard()
         {
-            // Build the progress bars for each stat
-            string hpBar = BuildSingleBar(monster.HP, monster.maxHP, 20, false) + $" {Math.Max(0, monster.HP)} HP";
-            string apBar = BuildSingleBar(monster.AP, GameSetupFlow.maxValue, 20, false) + $" {monster.AP} AP";
-            string dpBar = BuildSingleBar(monster.DP, GameSetupFlow.maxValue, 20, false) + $" {monster.DP} DP";
-            string speedBar = BuildSingleBar(monster.S, GameSetupFlow.maxValue, 20, true) + $" {monster.S} S";
+            infoBoardContent.Clear();
+        }
 
-            Console.ResetColor(); // Reset color before printing titles
+        public static void AddInfoBoardEntry(string entry)
+        {
+            if (infoBoardContent.Count>5)
+            {
+                infoBoardContent.Remove(infoBoardContent[0]);
+            }
+            infoBoardContent.Add("- " + entry);
+        }
 
-            // Print the class name of the monster in blue
+        public static void PrintAllMonsterStats(Monster monster01, Monster monster02)
+        {
+            Console.SetCursorPosition(0, 0);
+            ClearConsole(true);
+            Console.Write("\n");
+
+            PrintSingleMonsterStatBars(monster01);
+            Console.WriteLine("\n");
+            PrintSingleMonsterStatBars(monster02);
+            Console.WriteLine("\n");
+            PrintInfoBoard();
+        }
+
+        public static void PrintSingleMonsterStatBars(Monster monster)
+        {
+            string hpBar = BuildSingleBar(monster._hp, monster._maxHp, 20, false) + $" {Math.Max(0, monster._hp)} HP";
+            string apBar = BuildSingleBar(monster._ap, GameSetupFlow.maxValue, 20, false) + $" {monster._ap} AP";
+            string dpBar = BuildSingleBar(monster._dp, GameSetupFlow.maxValue, 20, false) + $" {monster._dp} DP";
+            string speedBar = BuildSingleBar(monster._s, GameSetupFlow.maxValue, 20, true) + $" {monster._s} S";
+
+            Console.ResetColor();
+
             Console.ForegroundColor = ConsoleColor.Blue;
-            Console.WriteLine((monster.Class.ToString().ToUpper()));
+            Console.WriteLine((monster.GetType().Name.ToUpper()));
 
-            // Print each stat bar in its respective color
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine(hpBar);
 
@@ -130,7 +135,7 @@ namespace Monsterkampf_Simulator
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine(speedBar);
 
-            Console.ResetColor(); // Reset console color after printing
+            Console.ResetColor();
         }
     }
 }
