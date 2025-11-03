@@ -1,8 +1,11 @@
-﻿namespace Monsterkampf_Simulator
+﻿using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
+
+namespace Monsterkampf_Simulator
 {
     public class GUIHandler
     {
-        private static List<string> infoBoardContent = new List<string>();
+        
         public static void PrintHeaderIcon()
         {
 
@@ -32,6 +35,26 @@
                 Console.Write(c);
 
                 if (i < 6) i++; else i = 1;
+            }
+
+            Console.ResetColor();
+        }
+
+        public static void PrintInfoBoard()
+        {
+            Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.Magenta;
+            Console.WriteLine(new string('=', 15) + " ACTION BOARD " + new string('=', 15));
+
+            if (InfoBoard.GetInfoBoardContent().Length == 0)
+            {
+                Console.WriteLine("- No Infoboard Data available!");
+                return;
+            }
+
+            foreach (InfoBoardAction action in InfoBoard.GetInfoBoardContent()) {
+                Console.ForegroundColor = action.fgColor;
+                Console.WriteLine("- " + action.content);
             }
 
             Console.ResetColor();
@@ -71,47 +94,21 @@
             }
         }
 
-        public static void PrintInfoBoard() {
-            Console.ResetColor();
-            Console.ForegroundColor = ConsoleColor.Magenta;
-            Console.WriteLine(new string('=', 15) + " ACTION BOARD " + new string('=', 15));
-            Console.ForegroundColor = ConsoleColor.DarkMagenta;
-            Console.WriteLine(string.Join("\n", infoBoardContent));
-            Console.ResetColor();
-        }
-
-        public static void ClearInfoBoard()
-        {
-            infoBoardContent.Clear();
-        }
-
-        public static void AddInfoBoardEntry(string entry)
-        {
-            if (infoBoardContent.Count>3)
-            {
-                while (infoBoardContent.Count > 3)
-                {
-                    infoBoardContent.Remove(infoBoardContent[0]);
-                }
-                    
-            }
-            infoBoardContent.Add("- " + entry);
-        }
-
         public static void PrintAllMonsterStats(Monster monster01, Monster monster02)
         {
             Console.SetCursorPosition(0, 0);
             ClearConsole(true);
             Console.Write("\n");
 
-            PrintSingleMonsterStatBars(monster01);
+            PrintSingleMonsterStats(monster01);
             Console.WriteLine("\n");
-            PrintSingleMonsterStatBars(monster02);
+            PrintSingleMonsterStats(monster02);
             Console.WriteLine("\n");
+            
             PrintInfoBoard();
         }
 
-        public static void PrintSingleMonsterStatBars(Monster monster)
+        public static void PrintSingleMonsterStats(Monster monster)
         {
             string hpBar = BuildSingleBar(monster._hp, monster._maxHp, 20, false) + $" {Math.Max(0, monster._hp)} HP";
             string apBar = BuildSingleBar(monster._ap, GameSetupFlow.maxValue, 20, false) + $" {monster._ap} AP";

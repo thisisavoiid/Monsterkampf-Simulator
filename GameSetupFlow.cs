@@ -6,7 +6,7 @@ namespace Monsterkampf_Simulator
     internal class GameSetupFlow
     {
 
-        static public int maxValue = 500;
+        static public int maxValue = 1000;
         static public int minValue = 10;
 
         private static Type[] GetAllMonsters()
@@ -109,7 +109,7 @@ namespace Monsterkampf_Simulator
 
                     case 2:
                         {
-                            Console.Write($"\nSet the total HP (health points) of your {(monsterIndex == 1 ? monster01.GetType().Name : monster02.GetType().Name)}: ");
+                            Console.Write($"\n=> Set the total HP (health points) of your {(monsterIndex == 1 ? monster01.GetType().Name : monster02.GetType().Name)}: ");
                             input = Console.ReadLine();
 
                             if (LogicLib.IsNumeral(input))
@@ -151,7 +151,7 @@ namespace Monsterkampf_Simulator
 
                     case 3:
                         {
-                            Console.Write($"\nSet the attack power (damage) of your {(monsterIndex == 1 ? monster01.GetType().Name : monster02.GetType().Name)}: ");
+                            Console.Write($"\n=> Set the attack power (damage) of your {(monsterIndex == 1 ? monster01.GetType().Name : monster02.GetType().Name)}: ");
                             input = Console.ReadLine();
 
                             if (LogicLib.IsNumeral(input))
@@ -205,7 +205,7 @@ namespace Monsterkampf_Simulator
 
                     case 4:
                         {
-                            Console.Write($"\nSet the defense points (damage reduction) of your {(monsterIndex == 1 ? monster01.GetType().Name : monster02.GetType().Name)}: ");
+                            Console.Write($"\n=> Set the defense points (damage reduction) of your {(monsterIndex == 1 ? monster01.GetType().Name : monster02.GetType().Name)}: ");
                             input = Console.ReadLine();
 
                             if (LogicLib.IsNumeral(input))
@@ -259,7 +259,7 @@ namespace Monsterkampf_Simulator
 
                     case 5:
                         {
-                            Console.Write($"\nSet the attack speed of your {(monsterIndex == 1 ? monster01.GetType().Name : monster02.GetType().Name)}: ");
+                            Console.Write($"\n=> Set the attack speed of your {(monsterIndex == 1 ? monster01.GetType().Name : monster02.GetType().Name)}: ");
                             input = Console.ReadLine();
 
                             if (LogicLib.IsNumeral(input))

@@ -1,11 +1,13 @@
-﻿namespace Monsterkampf_Simulator
+﻿using static System.Net.Mime.MediaTypeNames;
+
+namespace Monsterkampf_Simulator
 {
     public class Ork : Monster
     {
 
         public Ork()
         {
-            _description = "The mischievious Ork has the ability to inflict a thorn effect on its opponent, dealing back a certain damage!";
+            _description = "The Ork is a brutal fighter who reflects part of the damage back at attackers, dealing more as his health drops.";
         }
 
         public override void TakeDamage(float damage, Monster attacker)
@@ -17,15 +19,32 @@
                 this._hp = 0;
             }
 
-            float hpRatio = this._maxHp / this._hp;
-            attacker.TakeDamage((float)Math.Round(hpRatio * 10), this);
-            GUIHandler.AddInfoBoardEntry($"{this.GetType().Name} inflicted {(float)Math.Round(hpRatio * 10)} damage by thorns!");
-            GUIHandler.AddInfoBoardEntry($"{this.GetType().Name} took {damage} damage!");
+            if (this._hp > 0)
+            {
+                float hpRatio = this._maxHp / this._hp;
+                attacker.TakeDamage((float)Math.Round(hpRatio * 10), this);
+
+                InfoBoard.AddEntry(
+                    new InfoBoardAction
+                    {
+                        content = $"{this.GetType().Name} inflicted {(float)Math.Round(hpRatio * 10)} damage by thorns!",
+                        fgColor = ConsoleColor.DarkYellow,
+                    }
+                );
+            }
+
+            InfoBoard.AddEntry(
+                new InfoBoardAction
+                {
+                    content = $"{this.GetType().Name} took {damage} damage!",
+                    fgColor = ConsoleColor.DarkRed,
+                }
+            );
+
         }
 
         public override void Attack(Monster target)
         {
-            base.Attack(target);
 
             Thread.Sleep((int)Math.Round(_s));
 
@@ -45,22 +64,44 @@
     {
         public Troll()
         {
-            _description = "Hier muss eine Beschreibung hin, die die Fähigkeit des Monsters erklärt!";
+            _description = "The Troll is a resilient magic tank with a 33% chance to reduce incoming damage by 50%, shrinking down attacks unpredictably.";
         }
 
         public override void TakeDamage(float damage, Monster attacker)
         {
+            int randomInt = random.Next(1, 4);
+
+            if (randomInt == 1 && damage > 0)
+            {
+                damage = damage - damage / 2;
+
+                InfoBoard.AddEntry(
+                    new InfoBoardAction
+                    {
+                        content = $"{this.GetType().Name} tanked 50% damage!",
+                        fgColor = ConsoleColor.DarkYellow,
+                    }
+                );
+            }
+
             this._hp -= damage;
+
             if (this._hp < 0)
             {
                 this._hp = 0;
             }
-            GUIHandler.AddInfoBoardEntry($"{this.GetType().Name} took {damage} damage!");
+
+            InfoBoard.AddEntry(
+                new InfoBoardAction
+                {
+                    content = $"{this.GetType().Name} took {damage} damage!",
+                    fgColor = ConsoleColor.DarkRed,
+                }
+            );
         }
 
         public override void Attack(Monster target)
         {
-            base.Attack(target);
 
             Thread.Sleep((int)Math.Round(_s));
 
@@ -80,22 +121,45 @@
 
         public Goblin()
         {
-            _description = "Hier muss eine Beschreibung hin, die die Fähigkeit des Monsters erklärt!";
+            _description = "The Goblin is a tricky survivor who has a 20% chance to regain health when hit, trading attack speed for extra survivability.";
 
         }
         public override void TakeDamage(float damage, Monster attacker)
         {
+            int randomInt = random.Next(1, 6);
+
             this._hp -= damage;
+
+            if (randomInt == 1 && damage > 0)
+            {
+                float hpRegained = Math.Min(this._maxHp, this._s / 50);
+                this._hp += hpRegained;
+
+                InfoBoard.AddEntry(
+                    new InfoBoardAction
+                    {
+                        content = $"{this.GetType().Name} evaded part of the damage and regained {hpRegained} HP!",
+                        fgColor = ConsoleColor.DarkYellow,
+                    }
+                );
+            }
+
             if (this._hp < 0)
             {
                 this._hp = 0;
             }
-            GUIHandler.AddInfoBoardEntry($"{this.GetType().Name} took {damage} damage!");
+
+            InfoBoard.AddEntry(
+                new InfoBoardAction
+                {
+                    content = $"{this.GetType().Name} took {damage} damage!",
+                    fgColor = ConsoleColor.DarkRed,
+                }
+            );
         }
 
         public override void Attack(Monster target)
         {
-            base.Attack(target);
 
             Thread.Sleep((int)Math.Round(_s));
 
@@ -119,6 +183,8 @@
         public float _maxHp { get; set; }
         public string _description { get; set; }
 
+        protected Random random = new Random();
+
         public Monster()
         {
             _dp = 0;
@@ -140,10 +206,7 @@
         }
 
         public abstract void TakeDamage(float damage, Monster attacker);
-        public virtual void Attack(Monster target)
-        {
-            GUIHandler.AddInfoBoardEntry($"{this.GetType().Name} attacked {target.GetType().Name}!");
-        }
+        public abstract void Attack(Monster target);
 
         public bool IsAlive()
         {

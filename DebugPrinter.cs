@@ -2,6 +2,13 @@
 {
     internal class DebugPrinter
     {
+        struct ConsoleFormat
+        {
+            public ConsoleColor fgColor;
+            public ConsoleColor bgColor;
+            public string prefix;
+        }
+
         internal enum DebugLevel
         {
             Info,
@@ -9,12 +16,6 @@
             Error
         }
 
-        struct ConsoleFormat
-        {
-            public ConsoleColor fgColor;
-            public ConsoleColor bgColor;
-            public string prefix;
-        }
 
         static readonly Dictionary<DebugLevel, ConsoleFormat> DebugFormat = new Dictionary<DebugLevel, ConsoleFormat>()
         {

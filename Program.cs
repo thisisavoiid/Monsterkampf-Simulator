@@ -1,4 +1,6 @@
 ﻿using System.Data;
+using System.Diagnostics;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Monsterkampf_Simulator
 {
@@ -10,10 +12,10 @@ namespace Monsterkampf_Simulator
 
         public static int currentRound = 1;
 
-        static Thread monster01FightThread = new Thread(Monster01FightThread);
-        static Thread monster02FightThread = new Thread(Monster02FightThread);
-        static Thread fightThreadHandler = new Thread(ThreadHandler);
-        static Thread guiUpdateThreadHandler = new Thread(GUIUpdateThread);
+        private static Thread monster01FightThread = new Thread(Monster01FightThread);
+        private static Thread monster02FightThread = new Thread(Monster02FightThread);
+        private static Thread fightThreadHandler = new Thread(ThreadHandler);
+        private static Thread guiUpdateThreadHandler = new Thread(GUIUpdateThread);
 
         static void GUIUpdateThread()
         {
@@ -47,6 +49,7 @@ namespace Monsterkampf_Simulator
 
         static void ThreadHandler()
         {
+
             monster01FightThread.Start();
             monster02FightThread.Start();
             guiUpdateThreadHandler.Start();
@@ -59,19 +62,32 @@ namespace Monsterkampf_Simulator
 
         static void EndGameFlow()
         {
+
             Console.WriteLine("\n");
 
-            GUIHandler.ClearInfoBoard();
+            InfoBoard.Clear();
             GUIHandler.ClearConsole(true);
 
 
             if (monster01.IsAlive())
             {
-                GUIHandler.AddInfoBoardEntry($"{monster01.GetType().Name} has won the fight. Round counter: {currentRound}.");
+                InfoBoard.AddEntry(
+                    new InfoBoardAction
+                    {
+                        content = $"{monster01.GetType().Name} has won the fight. Round counter: {currentRound}.",
+                        fgColor = ConsoleColor.DarkMagenta,
+                    }
+                );
             }
             else if (monster02.IsAlive())
             {
-                GUIHandler.AddInfoBoardEntry($"{monster02.GetType().Name} has won the fight. Round counter: {currentRound}.");
+                InfoBoard.AddEntry(
+                    new InfoBoardAction
+                    {
+                        content = $"{monster02.GetType().Name} has won the fight. Round counter: {currentRound}.",
+                        fgColor = ConsoleColor.DarkMagenta,
+                    }
+                );
             }
             else
             {
@@ -90,6 +106,7 @@ namespace Monsterkampf_Simulator
         static void Main(string[] args)
         {
             GameSetupFlow.PlayerOnboardingFlow();
+
             Console.CursorVisible = false;
 
             fightThreadHandler.Start();
