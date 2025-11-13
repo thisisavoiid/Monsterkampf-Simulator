@@ -30,7 +30,7 @@
             Console.BackgroundColor = DebugFormat[level].bgColor;
             Console.WriteLine($"[{DebugFormat[level].prefix}] {message}");
             Console.ResetColor();
-
+            
             if (deleteAfter > 0)
             {
                 Thread.Sleep(deleteAfter);

@@ -1,12 +1,10 @@
-﻿using System.Data;
-using System.Diagnostics;
-using static System.Net.Mime.MediaTypeNames;
+﻿using System.Drawing;
 
 namespace Monsterkampf_Simulator
 {
     internal class Program
     {
-
+        
         public static Monster monster01;
         public static Monster monster02;
 

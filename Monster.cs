@@ -116,6 +116,7 @@ namespace Monsterkampf_Simulator
         }
     }
 
+
     public class Goblin : Monster
     {
 
