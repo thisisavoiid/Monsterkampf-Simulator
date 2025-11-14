@@ -7,12 +7,19 @@ using System.Threading.Tasks;
 
 namespace Monsterkampf_Simulator
 {
+    /// <summary>
+    /// Provides a message board that stores a limited number of recent InfoBoardAction entries.
+    /// Used to display the latest events or status messages in the fight simulation.
+    /// </summary>
     public class InfoBoard
     {
         private static readonly object lockObject = new object();
         private const int maxEntries = 5;
         private static List<InfoBoardAction> infoBoardContent = new List<InfoBoardAction>();
 
+        /// <summary>
+        /// Returns the current contents of the InfoBoard as an array.
+        /// </summary>
         public static InfoBoardAction[] GetInfoBoardContent()
         {
             lock (lockObject)
@@ -21,6 +28,9 @@ namespace Monsterkampf_Simulator
             }
         }
 
+        /// <summary>
+        /// Clears all entries from the InfoBoard.
+        /// </summary>
         public static void Clear()
         {
             lock (lockObject)
@@ -29,6 +39,10 @@ namespace Monsterkampf_Simulator
             }
         }
 
+        /// <summary>
+        /// Removes an entry at the specified index, if it exists.
+        /// Does nothing if index is out of range.
+        /// </summary>
         private static void RemoveEntry(int index)
         {
             lock (lockObject)
@@ -41,6 +55,10 @@ namespace Monsterkampf_Simulator
             }
         }
 
+        /// <summary>
+        /// Adds a new entry to the InfoBoard. If the board is full,
+        /// the oldest entry is removed first.
+        /// </summary>
         public static void AddEntry(InfoBoardAction entry)
         {
             lock (lockObject)

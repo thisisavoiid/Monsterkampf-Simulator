@@ -3,12 +3,18 @@ using System.Diagnostics;
 
 namespace Monsterkampf_Simulator
 {
+    /// <summary>
+    /// Handles all console-based GUI output for the fight simulation,
+    /// including headers, monster stats, info board printing, and visual bars.
+    /// </summary>
     public class GUIHandler
     {
-        
+        /// <summary>
+        /// Prints the colored ASCII header logo at the top of the console.
+        /// Cycles through multiple colors for a rainbow-like effect.
+        /// </summary>
         public static void PrintHeaderIcon()
         {
-
             string headerIcon = "______  ___                   _____                 ______________        ______ _____             \r\n" +
                                 "___   |/  /_____________________  /_____________    ___  ____/__(_)______ ___  /___  /_____________\r\n" +
                                 "__  /|_/ /_  __ \\_  __ \\_  ___/  __/  _ \\_  ___/    __  /_   __  /__  __ `/_  __ \\  __/  _ \\_  ___/\r\n" +
@@ -40,6 +46,10 @@ namespace Monsterkampf_Simulator
             Console.ResetColor();
         }
 
+        /// <summary>
+        /// Prints the InfoBoard including all recent InfoBoardAction entries.
+        /// If no entries exist, prints a fallback message.
+        /// </summary>
         public static void PrintInfoBoard()
         {
             Console.ResetColor();
@@ -52,7 +62,8 @@ namespace Monsterkampf_Simulator
                 return;
             }
 
-            foreach (InfoBoardAction action in InfoBoard.GetInfoBoardContent()) {
+            foreach (InfoBoardAction action in InfoBoard.GetInfoBoardContent())
+            {
                 Console.ForegroundColor = action.fgColor;
                 Console.WriteLine("- " + action.content);
             }
@@ -60,6 +71,24 @@ namespace Monsterkampf_Simulator
             Console.ResetColor();
         }
 
+        /// <summary>
+        /// Builds a visual bar using filled and empty characters.
+        /// </summary>
+        /// <param name="curr_value">
+        /// Current value.
+        /// </param>
+        /// <param name="max_value">
+        /// Maximum possible value.
+        /// </param>
+        /// <param name="len">
+        /// Total length of the bar in characters.
+        /// </param>
+        /// <param name="isInverted">
+        /// If true, swaps filled/empty positions.
+        /// </param>
+        /// <returns>
+        /// A visual bar string.
+        /// </returns>
         public static string BuildSingleBar(float curr_value, float max_value, int len, bool isInverted)
         {
             char filledChunkChar = '█';
@@ -77,6 +106,12 @@ namespace Monsterkampf_Simulator
             }
         }
 
+        /// <summary>
+        /// Clears the console window while optionally keeping the header visible.
+        /// </summary>
+        /// <param name="keepHeader">
+        /// If true, clears only the content below the header.
+        /// </param>
         public static void ClearConsole(bool keepHeader = true)
         {
             if (keepHeader)
@@ -94,6 +129,9 @@ namespace Monsterkampf_Simulator
             }
         }
 
+        /// <summary>
+        /// Prints the stats of two monsters, the header, and the info board in a single combined layout.
+        /// </summary>
         public static void PrintAllMonsterStats(Monster monster01, Monster monster02)
         {
             Console.SetCursorPosition(0, 0);
@@ -104,10 +142,13 @@ namespace Monsterkampf_Simulator
             Console.WriteLine("\n");
             PrintSingleMonsterStats(monster02);
             Console.WriteLine("\n");
-            
+
             PrintInfoBoard();
         }
 
+        /// <summary>
+        /// Prints a single monster's HP, AP, DP, and Speed bars including their labels.
+        /// </summary>
         public static void PrintSingleMonsterStats(Monster monster)
         {
             string hpBar = BuildSingleBar(monster._hp, monster._maxHp, 20, false) + $" {Math.Max(0, monster._hp)} HP";
@@ -118,7 +159,7 @@ namespace Monsterkampf_Simulator
             Console.ResetColor();
 
             Console.ForegroundColor = ConsoleColor.Blue;
-            Console.WriteLine((monster.GetType().Name.ToUpper()));
+            Console.WriteLine(monster.GetType().Name.ToUpper());
 
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine(hpBar);

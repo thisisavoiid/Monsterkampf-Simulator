@@ -9,6 +9,12 @@ namespace Monsterkampf_Simulator
         static public int maxValue = 1000;
         static public int minValue = 10;
 
+        /// <summary>
+        /// Fetches all classes in the current executing assembly and returns an array of the subclasses of the monster parent class.
+        /// </summary>
+        /// <returns>
+        /// An array of the subclasses of the monster parent class.
+        /// </returns>
         private static Type[] GetAllMonsters()
         {
             Assembly executingAssembly = Assembly.GetExecutingAssembly();
@@ -24,6 +30,10 @@ namespace Monsterkampf_Simulator
             return classList.ToArray();
         }
 
+        /// <summary>
+        /// Manages the onboarding flow for the player.
+        /// Contains monster configuration and value checks.
+        /// </summary>
         public static void PlayerOnboardingFlow()
         {
             int scopeIndex = 1;
